@@ -10,16 +10,16 @@ class Mux(CPUElement):
   def connect(self, inputSources, outputValueNames, control, outputSignalNames):
     '''
     Connect mux to input sources and controller
-    
+
     Note that the first inputSource is input zero, and the second is input 1
     '''
     CPUElement.connect(self, inputSources, outputValueNames, control, outputSignalNames)
-    
+
     assert(len(inputSources) == 2), 'Mux should have two inputs'
     assert(len(outputValueNames) == 1), 'Mux has only one output'
     assert(len(control) == 1), 'Mux has one control signal'
     assert(len(outputSignalNames) == 0), 'Mux does not have any control output'
-    
+
     self.inputZero = inputSources[0][1]
     self.inputOne = inputSources[1][1]
     self.outputName = outputValueNames[0]
@@ -27,21 +27,30 @@ class Mux(CPUElement):
 
   def writeOutput(self):
     muxControl = self.controlSignals[self.controlName]
-    
+
+    # print("Mux - Input0: ", self.inputValues[self.inputZero])
+    # print("Mux - Input1: ", self.inputValues[self.inputOne])
+    # print("Mux - Control: ", muxControl)
+
     assert(isinstance(muxControl, int))
     assert(not isinstance(muxControl, bool)) #...  (not bool)
     assert(muxControl == 0 or muxControl == 1), 'Invalid mux control signal value: %d' % (muxControl,)
-    
+
     if muxControl == 0:
+      # print("muxoutputzero: ", self.outputValues[self.outputName])
       self.outputValues[self.outputName] = self.inputValues[self.inputZero]
     else: # muxControl == 1
+      # print("muxoutputone: ", self.outputValues[self.outputName])
       self.outputValues[self.outputName] = self.inputValues[self.inputOne]
-  
+
+    x = 1
+
+    # print("Mux - Output: ", self.outputValues[self.outputName])
   def printOutput(self):
     '''
     Debug function that prints the output value
     '''
-    print 'mux.output = %d' % (self.outputValues[self.outputName],)
+    # print ('mux.output = %d' % (self.outputValues[self.outputName],))
 
 
 class TestMux(unittest.TestCase):
@@ -49,62 +58,62 @@ class TestMux(unittest.TestCase):
     self.mux = Mux()
     self.testInput = TestElement()
     self.testOutput = TestElement()
-    
+
     self.testInput.connect(
       [],
       ['dataA', 'dataB'],
       [],
       ['muxControl']
     )
-    
+
     self.mux.connect(
       [(self.testInput, 'dataA'), (self.testInput, 'dataB')],
       ['muxData'],
       [(self.testInput, 'muxControl')],
       []
     )
-    
+
     self.testOutput.connect(
       [(self.mux, 'muxData')],
       [],
       [],
       []
     )
-  
+
   def test_correct_behavior(self):
     self.testInput.setOutputValue('dataA', 10)
     self.testInput.setOutputValue('dataB', 20)
-    
+
     self.testInput.setOutputControl('muxControl', 0)
-    
+
     self.mux.readInput()
     self.mux.readControlSignals()
     self.mux.writeOutput()
     self.testOutput.readInput()
     output = self.testOutput.inputValues['muxData']
-    
+
     self.assertEqual(output, 10)
-    
+
     self.testInput.setOutputControl('muxControl', 1)
-    
+
     self.mux.readInput()
     self.mux.readControlSignals()
     self.mux.writeOutput()
     self.testOutput.readInput()
     output = self.testOutput.inputValues['muxData']
-    
+
     self.assertEqual(output, 20)
-    
+
   def assert_callback(self, arg):
     self.testInput.setOutputControl('muxControl', arg)
     self.mux.readControlSignals()
     self.mux.writeOutput()
-    
+
   def test_assert_on_incorrect_input(self):
     self.testInput.setOutputValue('dataA', 10)
     self.testInput.setOutputValue('dataB', 20)
     self.mux.readInput()
-      
+
     self.assertRaises(AssertionError, self.assert_callback, '1')
     self.assertRaises(AssertionError, self.assert_callback, '0')
     self.assertRaises(AssertionError, self.assert_callback, True)

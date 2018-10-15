@@ -13,6 +13,7 @@ import unittest
 from cpuElement import CPUElement
 import common
 
+
 class Memory(CPUElement):
   def __init__(self, filename):
   
@@ -28,26 +29,65 @@ class Memory(CPUElement):
     data from a file.
     '''
 
-    with open("fafasf.mem", "r") as f:
-      data = f.read()
+    f = open(filename, "r")
+
+    current_address = "0x0"
+    for line in f:
+      file_data = line.split("\t")
+      if file_data[0][0] != "\n":
+        # print(file_data)
+        if file_data[0][0] != "#":
+          self.memory[file_data[0]] = file_data[1]
+
+        self.endAddress = file_data[0]
+    f.close()
+
+    for i in range(10000):
+      if current_address in self.memory.keys():
+        pass
+
+      else:
+        self.memory[current_address] = 0
+
+      current_address = hex(int(current_address, 16) + 4)
+      #print(current_address)
+
+
+    #print(self.memory)
+
+
     # Remove this and replace with your implementation!
     # Implementation MUST populate the dictionary in self.memory!
-    raise AssertionError("initializeMemory not implemented in class Memory!");
+    #raise AssertionError("initializeMemory not implemented in class Memory!");
     
-  def printAll(self):
-    for key in sorted(self.memory.iterkeys()):
-      print "%s\t=> %s\t(%s)" % (hex(long(key))[:-1], common.fromUnsignedWordToSignedWord(self.memory[key]), hex(long(self.memory[key]))[:-1])
+  #def printAll(self):
+    #for key in sorted(self.memory):
+      #print((hex(int(key))[:-1] + "\t" + common.fromUnsignedWordToSignedWord(self.memory[key]) + "\t" + "(", hex(int(self.memory[key]))[:-1]) + ")")
 
 
 class TestMemory(unittest.TestCase):
   def setUp(self):
     self.memory = Memory("add.mem")
+    self.file = open("add.mem", "r")
+    self.mem_adr = None
+    self.bi_code = None
 
-  def test_correct_behavior:
-    with open("fafasf.mem", "r") as f:
-      data = f.readline()
-      f.close()
+  def test_correct_behavior(self):
+    for line in self.file:
+      current_data = line.split("\t")
 
-    q = data.split(" ")
+      if current_data[0][0] != "#":
+        self.mem_adr = current_data[0]
+        self.bi_code = current_data[1]
 
+        # print("mem: ", self.mem_adr)
+        # print("binary: ", self.bi_code)
+    test_case = self.memory.memory[self.mem_adr]
+    self.assertEqual(test_case, self.bi_code)
+
+    self.file.close()
+
+
+if __name__ == '__main__':
+  unittest.main()
 

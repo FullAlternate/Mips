@@ -57,7 +57,7 @@ class CPUElement:
       assert(isinstance(name, str)) # ... and second element must be string
       
       # Cannot have two input fields with the same name
-      assert(not self.inputValues.has_key(name)), 'Duplicate input value name: \'%s\' in CPU Element %s' % (name, repr(self))
+      assert(not name in self.inputValues), 'Duplicate input value name: \'%s\' in CPU Element %s' % (name, repr(self))
       self.inputValues[name] = 0 # Input values default to 0
     
     for n in outputValueNames:
@@ -65,7 +65,7 @@ class CPUElement:
       assert(isinstance(n, str))
       
       # Cannot have two output fields with the same name
-      assert(n not in self.outputValues), 'Duplicate output value name: \'%s\' in CPU Element %s' % (n, repr(self))
+      assert(n not in self.outputValues), 'Duplicate output value name: \'%s\' in CPU Element %s' % (n, repr(self)) # endret self.outputValues.has_key(name) til name in self.outputValues
       self.outputValues[n] = 0 # Output values default to 0
     
     for i in self.controlSources:
@@ -78,7 +78,7 @@ class CPUElement:
       assert(isinstance(src, CPUElement)) # ...and first element must be an instance of CPUElement
       assert(isinstance(name, str)) # ... and second element must be string
       
-      assert(not self.controlSignals.has_key(name)), 'Duplicate input control signal name: \'%s\' in CPU Element %s' % (name, repr(self))
+      assert(not name in self.controlSignals), 'Duplicate input control signal name: \'%s\' in CPU Element %s' % (name, repr(self)) # endret self.controlSignals.has_key(name) til name in self.controlSignals
       self.controlSignals[name] = 0 # Set all input control signals to 0 as default
     
     for s in outputSignalNames:

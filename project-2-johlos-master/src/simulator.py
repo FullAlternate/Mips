@@ -9,11 +9,11 @@ def runSimulator(sim):
   # Replace this with your own main loop!
   while (1):
     sim.tick()
-    print sim.pc.currentAddress()
+    # print (sim.pc.currentAddress())
 
 if __name__ == '__main__':
-  assert(len(sys.argv) == 2), 'Usage: python %s memoryFile' % (sys.argv[0],)
-  memoryFile = sys.argv[1]
+  #assert(len(sys.argv) == 2), 'Usage: python %s memoryFile' % (sys.argv[0],)
+  #memoryFile = sys.argv[1]
   
-  simulator = MIPSSimulator(memoryFile)
+  simulator = MIPSSimulator("selectionsort.mem")
   runSimulator(simulator)
